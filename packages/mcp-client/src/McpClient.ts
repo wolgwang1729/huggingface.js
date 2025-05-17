@@ -125,14 +125,20 @@ export class McpClient {
 	): AsyncGenerator<ChatCompletionStreamOutput | ChatCompletionInputMessageTool> {
 		debug("start of single turn");
 
-		const stream = this.client.chatCompletionStream({
-			provider: this.provider,
-			model: this.model,
-			messages,
-			tools: opts.exitLoopTools ? [...opts.exitLoopTools, ...this.availableTools] : this.availableTools,
-			tool_choice: "auto",
-			signal: opts.abortSignal,
-		});
+		const stream = this.client.chatCompletionStream(
+			{
+				provider: this.provider,
+				model: this.model,
+				messages,
+				tools: opts.exitLoopTools ? [...opts.exitLoopTools, ...this.availableTools] : this.availableTools,
+				tool_choice: "auto",
+			},
+			{
+				signal: opts.abortSignal,
+			}
+		);
+
+		// For groq: Put the https://api.groq.com/openai/v1/chat/completions as endpoint url and model into Model_id
 
 		const message = {
 			role: "unknown",
